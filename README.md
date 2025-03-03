@@ -11,9 +11,10 @@ RevLib
 Phoenix6
 PathPlanner
 GrappleHook
-WpiLib 2025
+WpiLib2025
+
 
 Made by:
 Smithville TigerTrons, Team 5503
 
-Made in Java.
+__Made in Java.__
