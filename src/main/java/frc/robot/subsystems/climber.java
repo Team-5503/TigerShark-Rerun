@@ -16,15 +16,22 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+/*
+ * INITIALIZATION
+ */
+
 public class climber extends SubsystemBase {
   SparkMax m_pivotMotor;
   private SparkClosedLoopController closedLoopControllerCl;
   private RelativeEncoder climbEncoder;
+
+  public climbPosition currentTargetPosition;
   /** Creates a new climber. */
   public climber() {
     m_pivotMotor = new SparkMax(41, MotorType.kBrushless); //Change the device id to correct one
     closedLoopControllerCl = m_pivotMotor.getClosedLoopController();
     climbEncoder = m_pivotMotor.getEncoder();
+    currentTargetPosition = climbPosition.STOW;
     //position = climb.getPosition();
 
     SparkMaxConfig climbConfig = new SparkMaxConfig();
@@ -37,15 +44,17 @@ public class climber extends SubsystemBase {
       .p(.15)
       .i(0)
       .d(.05)
-      .outputRange(-.7,.7 );
+      .outputRange(-.8,.8 );
     climbConfig.softLimit
       .forwardSoftLimitEnabled(true)
       .forwardSoftLimit(1)
       .reverseSoftLimitEnabled(true)
-      .reverseSoftLimit(-41);
+      .reverseSoftLimit(-63);
 
     m_pivotMotor.configure(climbConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
   }
+
+
   /*
    * FUCNTIONS FOR CLIMB
    */
@@ -56,20 +65,47 @@ public class climber extends SubsystemBase {
   }
 
   public void setReach(){
-    closedLoopControllerCl.setReference(-27, ControlType.kPosition);
+    closedLoopControllerCl.setReference(-56.25, ControlType.kPosition);
   }
 
   public void setStow(){
-    closedLoopControllerCl.setReference(-2, ControlType.kPosition);
+    closedLoopControllerCl.setReference(-4.16, ControlType.kPosition);
+  }
+
+  public void setPosition(climbPosition position){
+    currentTargetPosition = position;
+    closedLoopControllerCl.setReference(position.rotations, ControlType.kPosition);
   }
 
   public void stop(){
     m_pivotMotor.stopMotor();
   }
 
-  
+  private double getElevatorError() {
+    return Math.abs(Math.abs(climbEncoder.getPosition()) - Math.abs(currentTargetPosition.rotations));
+}
+
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+  }
+  public enum climbPosition {
+    // ENUMS FOR POSITIONS 
+    STOW(-4.16),
+    REACH(-56.25);
+
+    private double rotations;
+    /**Constrcutor for rotations for climbPositions (Enum for climb poses)
+    * @param rotations
+    * verticle movement in rotations
+    */
+    climbPosition(double rotations) {
+        this.rotations = rotations;
+    }
+
+    public double getRotations() {
+        return this.rotations;
+    }
   }
 }
