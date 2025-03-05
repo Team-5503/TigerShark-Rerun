@@ -12,57 +12,68 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /*
  * INITIALIZATION
  */
 
 public class climber extends SubsystemBase {
-  SparkMax m_pivotMotor;
+  SparkMax climbMotor;
   private SparkClosedLoopController closedLoopControllerCl;
   private RelativeEncoder climbEncoder;
+  private SparkMaxConfig climbConfig;
 
   public climbPosition currentTargetPosition;
   /** Creates a new climber. */
   public climber() {
-    m_pivotMotor = new SparkMax(41, MotorType.kBrushless); //Change the device id to correct one
-    closedLoopControllerCl = m_pivotMotor.getClosedLoopController();
-    climbEncoder = m_pivotMotor.getEncoder();
+    climbMotor = new SparkMax(41, MotorType.kBrushless); //TODO: change value to a constant and fix id if needed
+    closedLoopControllerCl = climbMotor.getClosedLoopController();
+    climbEncoder = climbMotor.getEncoder();
     currentTargetPosition = climbPosition.STOW;
     //position = climb.getPosition();
 
-    SparkMaxConfig climbConfig = new SparkMaxConfig();
+    configure();
+  }
 
+  /*
+   * CONFIGURATION
+   */
+
+  private void configure(){
+    climbConfig = new SparkMaxConfig();
+    //TODO: set up inversion and implement
     climbConfig
-      .smartCurrentLimit(80)
-      .idleMode(IdleMode.kBrake);
+      .smartCurrentLimit(80, 40) //TODO: change value(s) to constant(s)
+      .idleMode(IdleMode.kBrake); //TODO: change value(s) to a constant
     climbConfig.closedLoop
-      //Change values later
-      .p(.15)
-      .i(0)
-      .d(.05)
+      .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+      .pidf(.15, 0, .05, 0) //TODO: change value(s) to constant(s)
       .outputRange(-.8,.8 );
     climbConfig.softLimit
       .forwardSoftLimitEnabled(true)
-      .forwardSoftLimit(1)
+      .forwardSoftLimit(1) //TODO: change value(s) to a constant
       .reverseSoftLimitEnabled(true)
-      .reverseSoftLimit(-63);
+      .reverseSoftLimit(-63); //TODO: change value(s) to a constant
 
-    m_pivotMotor.configure(climbConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+   climbMotor.configure(climbConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
   }
-
 
   /*
-   * FUCNTIONS FOR CLIMB
+   * FUCNTIONS FOR SUBSYSTEM
    */
   
+  /*
+   * FUCNTIONS TO SET MOTORS AND ENCODERS
+   */
 
-   public double getPosition(){
-    return climbEncoder.getPosition();
-  }
 
   public void setReach(){
     closedLoopControllerCl.setReference(-56.25, ControlType.kPosition);
@@ -78,18 +89,49 @@ public class climber extends SubsystemBase {
   }
 
   public void stop(){
-    m_pivotMotor.stopMotor();
+   climbMotor.stopMotor();
   }
 
-  private double getElevatorError() {
-    return Math.abs(Math.abs(climbEncoder.getPosition()) - Math.abs(currentTargetPosition.rotations));
-}
+  public void resetEncoder(){
+    climbEncoder.setPosition(0);
+  }
 
+  /*
+   * FUNCTIONS TO GET VALUES
+   */
+
+  public double getPosition(){
+    return climbEncoder.getPosition();
+  }
+
+  private double getClimbError() {
+    return Math.abs(Math.abs(climbEncoder.getPosition()) - Math.abs(currentTargetPosition.rotations));
+  }
+
+  private boolean isAtSetpoint(){
+    return (getClimbError() < 5); //TODO: change value to a constant
+  }
+
+  /*
+   * COMMANDS THAT DO NOT SET ANY POSITIONS
+   * TODO: SEE IF WE NEED TO MOVE THIS TO ITS OWN COMMAND FILE
+   */
+
+  public Command waitUntilAtSetpoint() {
+    return new WaitUntilCommand(() -> {
+      // TEST FOR IF ELEVATORERROR IS IN TOLERANCE OF TARGETPOSITION
+      return isAtSetpoint();
+    });
+  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Climb Position", getPosition());
+    SmartDashboard.putNumber("Target Climb Position", currentTargetPosition.getRotations());
+    SmartDashboard.putBoolean("Climb at Setpoint", isAtSetpoint());
   }
+
   public enum climbPosition {
     // ENUMS FOR POSITIONS 
     STOW(-4.16),
