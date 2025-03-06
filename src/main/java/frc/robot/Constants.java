@@ -6,6 +6,10 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import frc.robot.generated.TunerConstants;
 
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
 /** Add your docs here. */
 public class Constants {
     public static class AutoConstants {
@@ -20,11 +24,45 @@ public class Constants {
 
     }
 
-    public static class IntakeConstants {
+    public static class CoralConstants {
 
     }
 
-    public static class ClimbConstants {
+    public static class AlgaeConstants {
+        
+    }
 
+    public static class ClimbConstants {
+        /*
+         * ids
+         */
+        public static final int kCanID = 41;
+        /*
+         * config
+         */
+        public static final boolean kInverted = true;
+        public static final int kStallLimit = 80;
+        public static final int kFreeLimit = 40;
+        public static final IdleMode kIdleMode = IdleMode.kBrake;
+        /*
+         * closed loop
+         */
+        public static final FeedbackSensor kSensor = FeedbackSensor.kPrimaryEncoder;
+        public static final double kP = .15;
+        public static final double kI = 0;
+        public static final double kD = .05;
+        public static final double kFf = 0;
+        public static final double kMinOutputLimit = -.8;
+        public static final double kMaxOutputLimit = .8;
+        /*
+         * soft limit
+         */
+        public static final double kForwardSoftLimit = 63;
+        public static final double kReverseSoftLimit = -1;
+        /*
+         * encoder
+         */
+        public static final double kPositionCoversionFactor = 1;
+        public static final double kTolerance = 5;
     }
 }

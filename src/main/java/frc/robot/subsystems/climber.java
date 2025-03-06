@@ -21,11 +21,15 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import frc.robot.Constants;
+import frc.robot.Constants.ClimbConstants;
+
 /*
  * INITIALIZATION
  */
 
 public class climber extends SubsystemBase {
+  //TODO: adapt to each subsystem
   SparkMax climbMotor;
   private SparkClosedLoopController closedLoopControllerCl;
   private RelativeEncoder climbEncoder;
@@ -34,7 +38,7 @@ public class climber extends SubsystemBase {
   public climbPosition currentTargetPosition;
   /** Creates a new climber. */
   public climber() {
-    climbMotor = new SparkMax(41, MotorType.kBrushless); //TODO: change value to a constant and fix id if needed
+    climbMotor = new SparkMax(ClimbConstants.kCanID, MotorType.kBrushless); 
     closedLoopControllerCl = climbMotor.getClosedLoopController();
     climbEncoder = climbMotor.getEncoder();
     currentTargetPosition = climbPosition.STOW;
@@ -49,19 +53,21 @@ public class climber extends SubsystemBase {
 
   private void configure(){
     climbConfig = new SparkMaxConfig();
-    //TODO: set up inversion and implement
     climbConfig
-      .smartCurrentLimit(80, 40) //TODO: change value(s) to constant(s)
-      .idleMode(IdleMode.kBrake); //TODO: change value(s) to a constant
+      .inverted(ClimbConstants.kInverted)
+      .smartCurrentLimit(ClimbConstants.kStallLimit, ClimbConstants.kFreeLimit)
+      .idleMode(ClimbConstants.kIdleMode); 
     climbConfig.closedLoop
-      .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-      .pidf(.15, 0, .05, 0) //TODO: change value(s) to constant(s)
-      .outputRange(-.8,.8 );
+      .feedbackSensor(ClimbConstants.kSensor) 
+      .pidf(ClimbConstants.kP, ClimbConstants.kI, ClimbConstants.kD, ClimbConstants.kFf) 
+      .outputRange(ClimbConstants.kMinOutputLimit,ClimbConstants.kMaxOutputLimit);
     climbConfig.softLimit
       .forwardSoftLimitEnabled(true)
-      .forwardSoftLimit(1) //TODO: change value(s) to a constant
+      .forwardSoftLimit(ClimbConstants.kForwardSoftLimit) 
       .reverseSoftLimitEnabled(true)
-      .reverseSoftLimit(-63); //TODO: change value(s) to a constant
+      .reverseSoftLimit(ClimbConstants.kReverseSoftLimit);
+    climbConfig.encoder
+      .positionConversionFactor(ClimbConstants.kPositionCoversionFactor);
 
    climbMotor.configure(climbConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
   }
@@ -76,10 +82,12 @@ public class climber extends SubsystemBase {
 
 
   public void setReach(){
+    currentTargetPosition = climbPosition.REACH;
     closedLoopControllerCl.setReference(-56.25, ControlType.kPosition);
   }
 
   public void setStow(){
+    currentTargetPosition = climbPosition.STOW;
     closedLoopControllerCl.setReference(-4.16, ControlType.kPosition);
   }
 
@@ -109,7 +117,7 @@ public class climber extends SubsystemBase {
   }
 
   private boolean isAtSetpoint(){
-    return (getClimbError() < 5); //TODO: change value to a constant
+    return (getClimbError() < ClimbConstants.kTolerance);
   }
 
   /*
@@ -134,8 +142,8 @@ public class climber extends SubsystemBase {
 
   public enum climbPosition {
     // ENUMS FOR POSITIONS 
-    STOW(-4.16),
-    REACH(-56.25);
+    STOW(4.16),
+    REACH(56.25);
 
     private double rotations;
     /**Constrcutor for rotations for climbPositions (Enum for climb poses)

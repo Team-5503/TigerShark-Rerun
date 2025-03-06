@@ -27,9 +27,9 @@ import frc.robot.Constants;
  * INITIALIZATION
  */
 
-public class elevator extends SubsystemBase {
-  /** Creates a new elevator. */
-  public elevator() {}
+public class Coral extends SubsystemBase {
+  /** Creates a new Coral. */
+  public Coral() {}
 
   @Override
   public void periodic() {
