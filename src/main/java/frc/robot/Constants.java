@@ -16,20 +16,142 @@ public class Constants {
 
     }
 
-    public static class ElevatorConstants {
-
+    public static class ElevatorConstants { //TODO: change and tune values
+        /*
+         * ids
+         */
+        public static final int kL1CanID = 41;
+        public static final int kL2CanID = 41;
+        /*
+         * config
+         */
+        public static final boolean kL1Inverted = true;
+        public static final boolean kL2Inverted = true;
+        public static final int kStallLimit = 80;
+        public static final int kFreeLimit = 40;
+        public static final IdleMode kIdleMode = IdleMode.kBrake;
+        /*
+         * closed loop
+         */
+        public static final FeedbackSensor kSensor = FeedbackSensor.kPrimaryEncoder;
+        public static final double kP = .15;
+        public static final double kI = 0;
+        public static final double kD = .05;
+        public static final double kFf = 0;
+        public static final double kMinOutputLimit = -.8;
+        public static final double kMaxOutputLimit = .8;
+        /*
+         * soft limit
+         */
+        public static final double kForwardSoftLimit = 63;
+        public static final double kReverseSoftLimit = -1;
+        /*
+         * encoder
+         */
+        public static final double kPositionCoversionFactor = 1;
+        public static final double kTolerance = 5;
     }
 
-    public static class PivotConstants {
-
+    public static class PivotConstants {//TODO: change and tune values
+        /*
+         * ids
+         */
+        public static final int kCanID = 41;
+        /*
+         * config
+         */
+        public static final boolean kInverted = true;
+        public static final int kStallLimit = 80;
+        public static final int kFreeLimit = 40;
+        public static final IdleMode kIdleMode = IdleMode.kBrake;
+        /*
+         * closed loop
+         */
+        public static final FeedbackSensor kSensor = FeedbackSensor.kPrimaryEncoder;
+        public static final double kP = .15;
+        public static final double kI = 0;
+        public static final double kD = .05;
+        public static final double kFf = 0;
+        public static final double kMinOutputLimit = -.8;
+        public static final double kMaxOutputLimit = .8;
+        /*
+         * soft limit
+         */
+        public static final double kForwardSoftLimit = 63;
+        public static final double kReverseSoftLimit = -1;
+        /*
+         * encoder
+         */
+        public static final double kPositionCoversionFactor = 1;
+        public static final double kTolerance = 5;
     }
 
-    public static class CoralConstants {
-
+    public static class CoralConstants { //TODO: change and tune values
+        /*
+         * ids
+         */
+        public static final int kCanID = 41;
+        /*
+         * config
+         */
+        public static final boolean kInverted = true;
+        public static final int kStallLimit = 80;
+        public static final int kFreeLimit = 40;
+        public static final IdleMode kIdleMode = IdleMode.kBrake;
+        /*
+         * closed loop
+         */
+        public static final FeedbackSensor kSensor = FeedbackSensor.kAbsoluteEncoder;
+        public static final double kP = .15;
+        public static final double kI = 0;
+        public static final double kD = .05;
+        public static final double kFf = 0;
+        public static final double kMinOutputLimit = -.8;
+        public static final double kMaxOutputLimit = .8;
+        /*
+         * soft limit
+         */
+        public static final double kForwardSoftLimit = 63;
+        public static final double kReverseSoftLimit = -1;
+        /*
+         * encoder
+         */
+        public static final double kPositionCoversionFactor = 1;
+        public static final double kTolerance = 5;
     }
 
-    public static class AlgaeConstants {
-        
+    public static class AlgaeConstants { //TODO: change and tune values
+        /*
+         * ids
+         */
+        public static final int kCanID = 41;
+        /*
+         * config
+         */
+        public static final boolean kInverted = true;
+        public static final int kStallLimit = 80;
+        public static final int kFreeLimit = 40;
+        public static final IdleMode kIdleMode = IdleMode.kBrake;
+        /*
+         * closed loop
+         */
+        public static final FeedbackSensor kSensor = FeedbackSensor.kPrimaryEncoder;
+        public static final double kP = .15;
+        public static final double kI = 0;
+        public static final double kD = .05;
+        public static final double kFf = 0;
+        public static final double kMinOutputLimit = -.8;
+        public static final double kMaxOutputLimit = .8;
+        /*
+         * soft limit
+         */
+        public static final double kForwardSoftLimit = 63;
+        public static final double kReverseSoftLimit = -1;
+        /*
+         * encoder
+         */
+        public static final double kPositionCoversionFactor = 1;
+        public static final double kTolerance = 5;
     }
 
     public static class ClimbConstants {
