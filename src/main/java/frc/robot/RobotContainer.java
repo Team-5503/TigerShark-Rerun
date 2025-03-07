@@ -22,6 +22,10 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.*;
 
 import frc.robot.commands.climb.*;
+//import frc.robot.commands.elevator.*;
+//import frc.robot.commands.wheelOfDeath.*;
+import frc.robot.commands.legoHand.coral.*;
+//import frc.robot.commands.legoHand.algae.*;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -37,10 +41,12 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final CommandXboxController joystick = new CommandXboxController(0);
+    private final CommandXboxController operator = new CommandXboxController(1);
 
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final climber climb = new climber();
+    public final coral coral = new coral();
 
     public RobotContainer() {
         configureBindings();
@@ -82,6 +88,15 @@ public class RobotContainer {
         cReach.onTrue(new climbReach(climb));
         final Trigger cStop = joystick.leftTrigger(.7);
         cStop.onTrue(new climbStop(climb)); 
+
+        final Trigger cIntake = operator.leftTrigger(.5);
+        cIntake.onTrue(
+            new coralIntake(coral)
+            .andThen(coral.waitUntilHasCoral())
+            .andThen(new coralStop(coral))
+        );
+        final Trigger cOuttake = operator.rightTrigger(.5);
+        cOuttake.whileTrue(new coralOuttake(coral)).onFalse(new coralStop(coral));
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }

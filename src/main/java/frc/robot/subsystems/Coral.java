@@ -15,6 +15,9 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import au.grapplerobotics.ConfigurationFailedException;
+import au.grapplerobotics.LaserCan;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -22,7 +25,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.Constants;
-import frc.robot.Constants.ClimbConstants;
+import frc.robot.Constants.CoralConstants;
 
 /*
  * INITIALIZATION
@@ -31,17 +34,20 @@ import frc.robot.Constants.ClimbConstants;
 public class coral extends SubsystemBase {
   //TODO: adapt to each subsystem
   SparkMax coralMotor;
+  LaserCan coralDetect;
+
   private SparkClosedLoopController closedLoopControllerC;
   private RelativeEncoder coralEncoder;
-  private SparkMaxConfig climbConfig;
+  private SparkMaxConfig coralConfig;
 
   public coralSpeed currentTargetSpeed;
-  /** Creates a new climber. */
+  /** Creates a new coral intake. */
   public coral() {
-    coralMotor = new SparkMax(ClimbConstants.kCanID, MotorType.kBrushless); 
+    coralMotor = new SparkMax(CoralConstants.kCanID, MotorType.kBrushless); 
+    coralDetect = new LaserCan(CoralConstants.kSensorID);
     closedLoopControllerC = coralMotor.getClosedLoopController();
     coralEncoder = coralMotor.getEncoder();
-    currentTargetSpeed = coralSpeed.STOW;
+    currentTargetSpeed = coralSpeed.STOP;
 
     configure();
   }
@@ -51,24 +57,32 @@ public class coral extends SubsystemBase {
    */
 
   private void configure(){
-    climbConfig = new SparkMaxConfig();
-    climbConfig
-      .inverted(ClimbConstants.kInverted)
-      .smartCurrentLimit(ClimbConstants.kStallLimit, ClimbConstants.kFreeLimit)
-      .idleMode(ClimbConstants.kIdleMode); 
-    climbConfig.closedLoop
-      .feedbackSensor(ClimbConstants.kSensor) 
-      .pidf(ClimbConstants.kP, ClimbConstants.kI, ClimbConstants.kD, ClimbConstants.kFf) 
-      .outputRange(ClimbConstants.kMinOutputLimit,ClimbConstants.kMaxOutputLimit);
-    climbConfig.softLimit
-      .forwardSoftLimitEnabled(true)
-      .forwardSoftLimit(ClimbConstants.kForwardSoftLimit) 
-      .reverseSoftLimitEnabled(true)
-      .reverseSoftLimit(ClimbConstants.kReverseSoftLimit);
-    climbConfig.encoder
-      .positionConversionFactor(ClimbConstants.kPositionCoversionFactor);
+    coralConfig = new SparkMaxConfig();
+    coralConfig
+      .inverted(CoralConstants.kInverted)
+      .smartCurrentLimit(CoralConstants.kStallLimit, CoralConstants.kFreeLimit)
+      .idleMode(CoralConstants.kIdleMode); 
+    coralConfig.closedLoop
+      .feedbackSensor(CoralConstants.kSensor) 
+      .pidf(CoralConstants.kP, CoralConstants.kI, CoralConstants.kD, CoralConstants.kFf) 
+      .outputRange(CoralConstants.kMinOutputLimit,CoralConstants.kMaxOutputLimit);
+    coralConfig.softLimit
+      .forwardSoftLimitEnabled(false)
+      .forwardSoftLimit(CoralConstants.kForwardSoftLimit) 
+      .reverseSoftLimitEnabled(false)
+      .reverseSoftLimit(CoralConstants.kReverseSoftLimit);
+    coralConfig.encoder
+      .positionConversionFactor(CoralConstants.kPositionCoversionFactor);
 
-   coralMotor.configure(climbConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+   coralMotor.configure(coralConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+// TODO: change lasercan config values to constants
+   try {
+    coralDetect.setRangingMode(LaserCan.RangingMode.SHORT);
+    coralDetect.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 16, 16));
+    coralDetect.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
+    } catch (ConfigurationFailedException e){
+      System.out.println("configuration failed: " + e);
+    }
   }
 
   /*
@@ -81,18 +95,18 @@ public class coral extends SubsystemBase {
 
 
   public void intake(){
-    currentTargetSpeed = coralSpeed.REACH;
-    closedLoopControllerC.setReference(currentTargetSpeed.speed, ControlType.kVelocity);
+    currentTargetSpeed = coralSpeed.INTAKE;
+    closedLoopControllerC.setReference(currentTargetSpeed.speed, ControlType.kVoltage);
   }
 
   public void outtake(){
-    currentTargetSpeed = coralSpeed.STOW;
-    closedLoopControllerC.setReference(currentTargetSpeed.speed, ControlType.kPosition);
+    currentTargetSpeed = coralSpeed.OUTTAKE;
+    closedLoopControllerC.setReference(currentTargetSpeed.speed, ControlType.kVoltage);
   }
 
   public void setSpeed(coralSpeed speed){
     currentTargetSpeed = speed;
-    closedLoopControllerC.setReference(speed.speed, ControlType.kPosition);
+    closedLoopControllerC.setReference(speed.speed, ControlType.kVoltage);
   }
 
   public void stop(){
@@ -116,36 +130,52 @@ public class coral extends SubsystemBase {
   }
 
   private boolean isAtSpeed(){
-    return (getSpeedError() < ClimbConstants.kTolerance);
+    return (getSpeedError() < CoralConstants.kTolerance);
+  }
+
+  private LaserCan.Measurement getMeasurement() {
+    return coralDetect.getMeasurement();
+  }
+
+  private boolean hasCoral(){
+    return (getMeasurement().distance_mm < CoralConstants.kTolerance);
   }
 
   /*
-   * COMMANDS THAT DO NOT SET ANY POSITIONS
+   * COMMANDS THAT DO NOT SET ANYTHING
    * TODO: SEE IF WE NEED TO MOVE THIS TO ITS OWN COMMAND FILE
    */
 
   public Command waitUntilAtSpeed() {
     return new WaitUntilCommand(() -> {
-      // TEST FOR IF ELEVATORERROR IS IN TOLERANCE OF TARGETPOSITION
+      // TEST FOR IF VELOCITYERROR IS IN TOLERANCE OF TARGETVELOCITY
       return isAtSpeed();
+    });
+  }
+
+  public Command waitUntilHasCoral() {
+    return new WaitUntilCommand(() -> {
+      // TEST FOR IF VELOCITYERROR IS IN TOLERANCE OF TARGETVELOCITY
+      return hasCoral();
     });
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("intake velocity", getSpeed());
-    SmartDashboard.putNumber("Target intake velocity", currentTargetSpeed.getSpeed());
-    SmartDashboard.putBoolean("Climb at Setpoint", isAtSpeed());
+    SmartDashboard.putNumber("Coral intake voltage", getSpeed());
+    SmartDashboard.putNumber("Target intake voltage", currentTargetSpeed.getSpeed());
+    SmartDashboard.putBoolean("Coral Intake at target voltage", isAtSpeed());
   }
 
   public enum coralSpeed {
-    // ENUMS FOR POSITIONS 
-    STOW(4.16),
-    REACH(56.25);
+    // ENUMS FOR VOLTAGES 
+    INTAKE(.15),
+    STOP(0),
+    OUTTAKE(.6);
 
     private double speed;
-    /**Constrcutor for speed for coralSpeeds (Enum for climb poses)
+    /**Constrcutor for speed for coralSpeeds (Enum for voltage)
     * @param speed
     * verticle movement in speed
     */

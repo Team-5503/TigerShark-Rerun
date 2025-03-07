@@ -93,6 +93,7 @@ public class Constants {
          * ids
          */
         public static final int kCanID = 41;
+        public static final int kSensorID = 19;
         /*
          * config
          */
@@ -104,7 +105,7 @@ public class Constants {
          * closed loop
          */
         public static final FeedbackSensor kSensor = FeedbackSensor.kPrimaryEncoder;
-        public static final double kP = .15;
+        public static final double kP = .2;
         public static final double kI = 0;
         public static final double kD = .05;
         public static final double kFf = 0;
@@ -119,7 +120,7 @@ public class Constants {
          * encoder
          */
         public static final double kPositionCoversionFactor = 1;
-        public static final double kTolerance = 5;
+        public static final double kTolerance = 15; // TODO: change if needed
     }
 
     public static class AlgaeConstants { //TODO: change and tune values
