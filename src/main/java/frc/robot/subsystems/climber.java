@@ -83,12 +83,12 @@ public class climber extends SubsystemBase {
 
   public void setReach(){
     currentTargetPosition = climbPosition.REACH;
-    closedLoopControllerCl.setReference(-56.25, ControlType.kPosition);
+    closedLoopControllerCl.setReference(currentTargetPosition.rotations, ControlType.kPosition);
   }
 
   public void setStow(){
     currentTargetPosition = climbPosition.STOW;
-    closedLoopControllerCl.setReference(-4.16, ControlType.kPosition);
+    closedLoopControllerCl.setReference(currentTargetPosition.rotations, ControlType.kPosition);
   }
 
   public void setPosition(climbPosition position){
