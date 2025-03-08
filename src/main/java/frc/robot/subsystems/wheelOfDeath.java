@@ -13,8 +13,6 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -22,8 +20,8 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import frc.robot.Constants;
 import frc.robot.Constants.PivotConstants;
+
 
 /*
  * INITIALIZATION
@@ -35,7 +33,7 @@ public class wheelOfDeath extends SubsystemBase {
   private SparkClosedLoopController closedLoopControllerPivot;
   private RelativeEncoder pivotEncoder;
   private AbsoluteEncoder absolutePivotEncoder;
-  private SparkMaxConfig climbConfig;
+  private SparkMaxConfig pivotConfig;
 
   public pivotPosition currentTargetPosition;
   /** Creates a new climber. */
@@ -55,24 +53,29 @@ public class wheelOfDeath extends SubsystemBase {
    */
 
   private void configure(){
-    climbConfig = new SparkMaxConfig();
-    climbConfig
+    pivotConfig = new SparkMaxConfig();
+    pivotConfig
       .inverted(PivotConstants.kInverted)
       .smartCurrentLimit(PivotConstants.kStallLimit, PivotConstants.kFreeLimit)
       .idleMode(PivotConstants.kIdleMode); 
-    climbConfig.closedLoop
+    pivotConfig.closedLoop
       .feedbackSensor(PivotConstants.kSensor) 
       .pidf(PivotConstants.kP, PivotConstants.kI, PivotConstants.kD, PivotConstants.kFf) 
       .outputRange(PivotConstants.kMinOutputLimit,PivotConstants.kMaxOutputLimit);
-    climbConfig.softLimit
+    pivotConfig.softLimit
       .forwardSoftLimitEnabled(true)
       .forwardSoftLimit(PivotConstants.kForwardSoftLimit) 
       .reverseSoftLimitEnabled(true)
       .reverseSoftLimit(PivotConstants.kReverseSoftLimit);
-    climbConfig.encoder
+    pivotConfig.encoder
       .positionConversionFactor(PivotConstants.kPositionCoversionFactor);
+    pivotConfig.absoluteEncoder
+    .positionConversionFactor(PivotConstants.kPositionCoversionFactor)
+    .zeroOffset(PivotConstants.kOffset)
+    .zeroCentered(true)
+    .inverted(PivotConstants.kAbsoluteEncoderInverted);
 
-   pivotMotor.configure(climbConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+   pivotMotor.configure(pivotConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 
   /*
@@ -84,9 +87,9 @@ public class wheelOfDeath extends SubsystemBase {
    */
 
 
-  public void setPosition(pivotPosition position){
-    currentTargetPosition = position;
-    closedLoopControllerPivot.setReference(position.degrees, ControlType.kPosition);
+  public void setPosition(pivotPosition stow){
+    currentTargetPosition = stow;
+    closedLoopControllerPivot.setReference(stow.degrees, ControlType.kPosition);
   }
 
   public void stop(){
@@ -136,7 +139,12 @@ public class wheelOfDeath extends SubsystemBase {
   public enum pivotPosition {
     // ENUMS FOR POSITIONS 
     STOW(0),
-    REACH(56.25);
+    L_ONE(56.25),
+    L_TWO(0),
+    L_THREE(0),
+    L_FOUR(0),
+    C_BAY(0),
+    SAFE(180);
 
     private double degrees;
     /**Constrcutor for degrees for pivotPositions (Enum for pivot poses)

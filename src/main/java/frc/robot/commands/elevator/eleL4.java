@@ -10,10 +10,10 @@ import frc.robot.subsystems.elevator.elevatorPosition;
 
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class eleStow extends Command {
+public class eleL4 extends Command {
   private final elevator elevator;
-  /** Creates a new eleStow. */
-  public eleStow(elevator subsystem) {
+  /** Creates a new eleL4. */
+  public eleL4(elevator subsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
     elevator = subsystem;
     addRequirements(elevator);
@@ -26,7 +26,7 @@ public class eleStow extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    elevator.setPosition(elevatorPosition.STOW);
+    elevator.setPosition(elevatorPosition.L_FOUR);
   }
 
   // Called once the command ends or is interrupted.

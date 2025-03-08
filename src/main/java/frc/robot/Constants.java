@@ -6,9 +6,8 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import frc.robot.generated.TunerConstants;
 
-import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
 
 /** Add your docs here. */
 public class Constants {
@@ -70,6 +69,9 @@ public class Constants {
         public static final int kStallLimit = 50;
         public static final int kFreeLimit = 30;
         public static final IdleMode kIdleMode = IdleMode.kBrake;
+
+        public static final double kOffset = 0;
+        public static final boolean kAbsoluteEncoderInverted = false;
         /*
          * closed loop
          */

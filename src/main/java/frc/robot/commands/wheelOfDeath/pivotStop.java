@@ -5,12 +5,16 @@
 package frc.robot.commands.wheelOfDeath;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.wheelOfDeath;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class pivotStop extends Command {
+  private final wheelOfDeath pivot;
   /** Creates a new pivotStop. */
-  public pivotStop() {
+  public pivotStop(wheelOfDeath subsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
+    pivot = subsystem;
+    addRequirements(pivot);
   }
 
   // Called when the command is initially scheduled.
@@ -19,7 +23,9 @@ public class pivotStop extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    pivot.stop();
+  }
 
   // Called once the command ends or is interrupted.
   @Override

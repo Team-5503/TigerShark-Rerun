@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
@@ -23,8 +22,8 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.*;
 
 import frc.robot.commands.climb.*;
-//import frc.robot.commands.elevator.*;
-//import frc.robot.commands.wheelOfDeath.*;
+import frc.robot.commands.elevator.*;
+import frc.robot.commands.wheelOfDeath.*;
 import frc.robot.commands.legoHand.coral.*;
 //import frc.robot.commands.legoHand.algae.*;
 
@@ -42,12 +41,14 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final CommandXboxController joystick = new CommandXboxController(0);
-    private final CommandPS4Controller operator = new CommandPS4Controller(1);
+    private final CommandXboxController operator = new CommandXboxController(1);
 
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final climber climb = new climber();
     public final coral coral = new coral();
+    public final elevator elevator = new elevator();
+    public final wheelOfDeath pivot = new wheelOfDeath();
 
     public RobotContainer() {
         configureBindings();
@@ -90,14 +91,21 @@ public class RobotContainer {
         final Trigger cStop = joystick.leftTrigger(.7);
         cStop.onTrue(new climbStop(climb)); 
 
-        final Trigger cIntake = operator.L2();
+        final Trigger cIntake = operator.leftTrigger(.5);
         cIntake.onTrue(
             new coralIntake(coral)
             .andThen(coral.waitUntilHasCoral())
             .andThen(new coralStop(coral))
         );
-        final Trigger cOuttake = operator.R2();
+        final Trigger cOuttake = operator.rightTrigger(.5);
         cOuttake.whileTrue(new coralOuttake(coral)).onFalse(new coralStop(coral));
+
+        // position triggers
+        final Trigger cLayerOne = operator.a();
+        final Trigger cLayerTwo = operator.x();
+        final Trigger cLayerThree = operator.b();
+        final Trigger cLayerFour = operator.y();
+        final Trigger cBay = operator.rightBumper();
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
