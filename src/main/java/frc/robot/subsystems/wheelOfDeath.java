@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
@@ -22,17 +23,132 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.Constants;
+import frc.robot.Constants.PivotConstants;
 
 /*
  * INITIALIZATION
  */
 
 public class wheelOfDeath extends SubsystemBase {
-  /** Creates a new wheelOfDeath. */
-  public wheelOfDeath() {}
+  //TODO: adapt to each subsystem
+  SparkMax pivotMotor;
+  private SparkClosedLoopController closedLoopControllerPivot;
+  private RelativeEncoder pivotEncoder;
+  private AbsoluteEncoder absolutePivotEncoder;
+  private SparkMaxConfig climbConfig;
+
+  public pivotPosition currentTargetPosition;
+  /** Creates a new climber. */
+  public wheelOfDeath() {
+    pivotMotor = new SparkMax(PivotConstants.kCanID, MotorType.kBrushless); 
+    closedLoopControllerPivot = pivotMotor.getClosedLoopController();
+    pivotEncoder = pivotMotor.getEncoder();
+    currentTargetPosition = pivotPosition.STOW;
+    absolutePivotEncoder = pivotMotor.getAbsoluteEncoder();
+    //position = climb.getPosition();
+
+    configure();
+  }
+
+  /*
+   * CONFIGURATION
+   */
+
+  private void configure(){
+    climbConfig = new SparkMaxConfig();
+    climbConfig
+      .inverted(PivotConstants.kInverted)
+      .smartCurrentLimit(PivotConstants.kStallLimit, PivotConstants.kFreeLimit)
+      .idleMode(PivotConstants.kIdleMode); 
+    climbConfig.closedLoop
+      .feedbackSensor(PivotConstants.kSensor) 
+      .pidf(PivotConstants.kP, PivotConstants.kI, PivotConstants.kD, PivotConstants.kFf) 
+      .outputRange(PivotConstants.kMinOutputLimit,PivotConstants.kMaxOutputLimit);
+    climbConfig.softLimit
+      .forwardSoftLimitEnabled(true)
+      .forwardSoftLimit(PivotConstants.kForwardSoftLimit) 
+      .reverseSoftLimitEnabled(true)
+      .reverseSoftLimit(PivotConstants.kReverseSoftLimit);
+    climbConfig.encoder
+      .positionConversionFactor(PivotConstants.kPositionCoversionFactor);
+
+   pivotMotor.configure(climbConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+  }
+
+  /*
+   * FUCNTIONS FOR SUBSYSTEM
+   */
+  
+  /*
+   * FUCNTIONS TO SET MOTORS AND ENCODERS
+   */
+
+
+  public void setPosition(pivotPosition position){
+    currentTargetPosition = position;
+    closedLoopControllerPivot.setReference(position.degrees, ControlType.kPosition);
+  }
+
+  public void stop(){
+   pivotMotor.stopMotor();
+  }
+
+  public void resetEncoder(){
+    pivotEncoder.setPosition(0);
+  }
+
+  /*
+   * FUNCTIONS TO GET VALUES
+   */
+
+  public double getPosition(){
+    return absolutePivotEncoder.getPosition();
+  }
+
+  private double getPivotError() {
+    return Math.abs(Math.abs(absolutePivotEncoder.getPosition()) - Math.abs(currentTargetPosition.degrees));
+  }
+
+  private boolean isAtSetpoint(){
+    return (getPivotError() < PivotConstants.kTolerance);
+  }
+
+  /*
+   * COMMANDS THAT DO NOT SET ANY POSITIONS
+   * TODO: SEE IF WE NEED TO MOVE THIS TO ITS OWN COMMAND FILE
+   */
+
+  public Command waitUntilAtSetpoint() {
+    return new WaitUntilCommand(() -> {
+      // TEST FOR IF PIVOTERROR IS IN TOLERANCE OF TARGETPOSITION
+      return isAtSetpoint();
+    });
+  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putNumber("Pivot Position", getPosition());
+    SmartDashboard.putNumber("Target Pivot Position", currentTargetPosition.getDegrees());
+    SmartDashboard.putBoolean("Pivot at Setpoint", isAtSetpoint());
+  }
+
+  public enum pivotPosition {
+    // ENUMS FOR POSITIONS 
+    STOW(0),
+    REACH(56.25);
+
+    private double degrees;
+    /**Constrcutor for degrees for pivotPositions (Enum for pivot poses)
+    * @param degrees
+    * verticle movement in degrees
+    */
+    pivotPosition(double degrees) {
+        this.degrees = degrees;
+    }
+
+    public double getDegrees() {
+        return this.degrees;
+    }
   }
 }

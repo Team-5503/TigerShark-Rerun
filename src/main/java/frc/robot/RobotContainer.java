@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
@@ -41,7 +42,7 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final CommandXboxController joystick = new CommandXboxController(0);
-    private final CommandXboxController operator = new CommandXboxController(1);
+    private final CommandPS4Controller operator = new CommandPS4Controller(1);
 
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
@@ -89,13 +90,13 @@ public class RobotContainer {
         final Trigger cStop = joystick.leftTrigger(.7);
         cStop.onTrue(new climbStop(climb)); 
 
-        final Trigger cIntake = operator.leftTrigger(.5);
+        final Trigger cIntake = operator.L2();
         cIntake.onTrue(
             new coralIntake(coral)
             .andThen(coral.waitUntilHasCoral())
             .andThen(new coralStop(coral))
         );
-        final Trigger cOuttake = operator.rightTrigger(.5);
+        final Trigger cOuttake = operator.R2();
         cOuttake.whileTrue(new coralOuttake(coral)).onFalse(new coralStop(coral));
 
         drivetrain.registerTelemetry(logger::telemeterize);

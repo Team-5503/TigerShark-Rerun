@@ -6,6 +6,7 @@ package frc.robot.commands.climb;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.climber;
+import frc.robot.subsystems.climber.climbPosition;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class climbReach extends Command {
@@ -24,7 +25,7 @@ private final climber climb;
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    climb.setReach();
+    climb.setPosition(climbPosition.REACH);
   }
 
   // Called once the command ends or is interrupted.

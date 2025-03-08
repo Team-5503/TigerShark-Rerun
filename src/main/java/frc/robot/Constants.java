@@ -20,8 +20,8 @@ public class Constants {
         /*
          * ids
          */
-        public static final int kL1CanID = 41;
-        public static final int kL2CanID = 41;
+        public static final int kL1CanID = 13;
+        public static final int kL2CanID = 14;
         /*
          * config
          */
@@ -34,10 +34,14 @@ public class Constants {
          * closed loop
          */
         public static final FeedbackSensor kSensor = FeedbackSensor.kPrimaryEncoder;
-        public static final double kP = .15;
-        public static final double kI = 0;
-        public static final double kD = .05;
-        public static final double kFf = 0;
+        public static final double kPL1 = .15;
+        public static final double kIL1 = 0;
+        public static final double kDL1 = .05;
+        public static final double kFfL1 = 0;
+        public static final double kPL2 = .15;
+        public static final double kIL2 = 0;
+        public static final double kDL2 = .05;
+        public static final double kFfL2 = 0;
         public static final double kMinOutputLimit = -.8;
         public static final double kMaxOutputLimit = .8;
         /*
@@ -51,14 +55,14 @@ public class Constants {
          * encoder
          */
         public static final double kPositionCoversionFactor = 1;
-        public static final double kTolerance = 2;
+        public static final double kTolerance = 1;
     }
 
     public static class PivotConstants {//TODO: change and tune values
         /*
          * ids
          */
-        public static final int kCanID = 41;
+        public static final int kCanID = 15;
         /*
          * config
          */
@@ -84,7 +88,7 @@ public class Constants {
         /*
          * encoder
          */
-        public static final double kPositionCoversionFactor = 1;
+        public static final double kPositionCoversionFactor = 360;
         public static final double kTolerance = 5;
     }
 
@@ -92,7 +96,7 @@ public class Constants {
         /*
          * ids
          */
-        public static final int kCanID = 41;
+        public static final int kCanID = 16;
         public static final int kSensorID = 19;
         /*
          * config
@@ -127,7 +131,7 @@ public class Constants {
         /*
          * ids
          */
-        public static final int kCanID = 41;
+        public static final int kCanID = 17;
         /*
          * config
          */

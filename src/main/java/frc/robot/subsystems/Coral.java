@@ -96,17 +96,17 @@ public class coral extends SubsystemBase {
 
   public void intake(){
     currentTargetSpeed = coralSpeed.INTAKE;
-    closedLoopControllerC.setReference(currentTargetSpeed.speed, ControlType.kVoltage);
+    closedLoopControllerC.setReference(currentTargetSpeed.speed, ControlType.kDutyCycle);
   }
 
   public void outtake(){
     currentTargetSpeed = coralSpeed.OUTTAKE;
-    closedLoopControllerC.setReference(currentTargetSpeed.speed, ControlType.kVoltage);
+    closedLoopControllerC.setReference(currentTargetSpeed.speed, ControlType.kDutyCycle);
   }
 
   public void setSpeed(coralSpeed speed){
     currentTargetSpeed = speed;
-    closedLoopControllerC.setReference(speed.speed, ControlType.kVoltage);
+    closedLoopControllerC.setReference(speed.speed, ControlType.kDutyCycle);
   }
 
   public void stop(){
