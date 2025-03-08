@@ -63,9 +63,9 @@ public class wheelOfDeath extends SubsystemBase {
       .pidf(PivotConstants.kP, PivotConstants.kI, PivotConstants.kD, PivotConstants.kFf) 
       .outputRange(PivotConstants.kMinOutputLimit,PivotConstants.kMaxOutputLimit);
     pivotConfig.softLimit
-      .forwardSoftLimitEnabled(true)
+      .forwardSoftLimitEnabled(false)
       .forwardSoftLimit(PivotConstants.kForwardSoftLimit) 
-      .reverseSoftLimitEnabled(true)
+      .reverseSoftLimitEnabled(false)
       .reverseSoftLimit(PivotConstants.kReverseSoftLimit);
     pivotConfig.encoder
       .positionConversionFactor(PivotConstants.kPositionCoversionFactor);

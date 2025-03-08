@@ -33,22 +33,22 @@ public class Constants {
          * closed loop
          */
         public static final FeedbackSensor kSensor = FeedbackSensor.kPrimaryEncoder;
-        public static final double kPL1 = .15;
+        public static final double kPL1 = .05;
         public static final double kIL1 = 0;
-        public static final double kDL1 = .05;
+        public static final double kDL1 = .02;
         public static final double kFfL1 = 0;
-        public static final double kPL2 = .15;
+        public static final double kPL2 = .05;
         public static final double kIL2 = 0;
-        public static final double kDL2 = .05;
+        public static final double kDL2 = .02;
         public static final double kFfL2 = 0;
         public static final double kMinOutputLimit = -.8;
         public static final double kMaxOutputLimit = .8;
         /*
          * soft limit
          */
-        public static final double kL1ForwardSoftLimit = 63;
+        public static final double kL1ForwardSoftLimit = 50;
         public static final double kL1ReverseSoftLimit = -1;
-        public static final double kL2ForwardSoftLimit = 63;
+        public static final double kL2ForwardSoftLimit = 35;
         public static final double kL2ReverseSoftLimit = -1;
         /*
          * encoder

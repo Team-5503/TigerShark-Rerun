@@ -139,6 +139,11 @@ public class RobotContainer {
             .andThen(new eleBay(elevator))
             .alongWith(new pivotBay(pivot))
         );
+        final Trigger superStructureStop = operator.start();
+        superStructureStop.onTrue(
+            new eleStop(elevator)
+            .alongWith(new pivotStop(pivot))
+        );
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
