@@ -157,6 +157,13 @@ public class coral extends SubsystemBase {
     });
   }
 
+  public Command waitUntilHasNoCoral() {
+    return new WaitUntilCommand(() -> {
+      // TEST FOR IF VELOCITYERROR IS IN TOLERANCE OF TARGETVELOCITY
+      return !hasCoral();
+    });
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

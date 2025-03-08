@@ -98,14 +98,47 @@ public class RobotContainer {
             .andThen(new coralStop(coral))
         );
         final Trigger cOuttake = operator.rightTrigger(.5);
-        cOuttake.whileTrue(new coralOuttake(coral)).onFalse(new coralStop(coral));
+        cOuttake.whileTrue(new coralOuttake(coral)).onFalse(
+            coral.waitUntilHasNoCoral()
+            .andThen(new coralStop(coral))
+        );
 
         // position triggers
         final Trigger cLayerOne = operator.a();
+        cLayerOne.onTrue(
+            new pivotSafe(pivot)
+            .andThen(pivot.waitUntilAtSetpoint())
+            .andThen(new eleL1(elevator))
+            .alongWith(new pivotL1(pivot))
+        );
         final Trigger cLayerTwo = operator.x();
+        cLayerTwo.onTrue(
+            new pivotSafe(pivot)
+            .andThen(pivot.waitUntilAtSetpoint())
+            .andThen(new eleL2(elevator))
+            .alongWith(new pivotL2(pivot))
+        );
         final Trigger cLayerThree = operator.b();
+        cLayerThree.onTrue(
+            new pivotSafe(pivot)
+            .andThen(pivot.waitUntilAtSetpoint())
+            .andThen(new eleL3(elevator))
+            .alongWith(new pivotL3(pivot))
+        );
         final Trigger cLayerFour = operator.y();
+        cLayerFour.onTrue(
+            new pivotSafe(pivot)
+            .andThen(pivot.waitUntilAtSetpoint())
+            .andThen(new eleL4(elevator))
+            .alongWith(new pivotL4(pivot))
+        );
         final Trigger cBay = operator.rightBumper();
+        cBay.onTrue(
+            new pivotSafe(pivot)
+            .andThen(pivot.waitUntilAtSetpoint())
+            .andThen(new eleBay(elevator))
+            .alongWith(new pivotBay(pivot))
+        );
 
         drivetrain.registerTelemetry(logger::telemeterize);
     }
