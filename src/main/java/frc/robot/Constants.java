@@ -28,7 +28,7 @@ public class Constants {
         public static final boolean kL2Inverted = true;
         public static final int kStallLimit = 60;
         public static final int kFreeLimit = 30;
-        public static final IdleMode kIdleMode = IdleMode.kBrake;
+        public static final IdleMode kIdleMode = IdleMode.kCoast; // TODO: change to brake
         /*
          * closed loop
          */
@@ -68,7 +68,7 @@ public class Constants {
         public static final boolean kInverted = true;
         public static final int kStallLimit = 50;
         public static final int kFreeLimit = 30;
-        public static final IdleMode kIdleMode = IdleMode.kBrake;
+        public static final IdleMode kIdleMode = IdleMode.kCoast; // TODO: change to brake
 
         public static final double kOffset = 0;
         public static final boolean kAbsoluteEncoderInverted = false;
@@ -106,7 +106,7 @@ public class Constants {
         public static final boolean kInverted = true;
         public static final int kStallLimit = 80;
         public static final int kFreeLimit = 40;
-        public static final IdleMode kIdleMode = IdleMode.kBrake;
+        public static final IdleMode kIdleMode = IdleMode.kCoast; // TODO: change to brake
         /*
          * closed loop
          */

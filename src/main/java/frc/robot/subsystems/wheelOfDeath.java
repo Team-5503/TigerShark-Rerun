@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.Constants.PivotConstants;
+import frc.robot.subsystems.elevator.elevatorPosition;
 
 
 /*
@@ -87,7 +88,7 @@ public class wheelOfDeath extends SubsystemBase {
    */
 
 
-  public void setPosition(pivotPosition stow){
+  public void setPivotPosition(pivotPosition stow){
     currentTargetPosition = stow;
     closedLoopControllerPivot.setReference(stow.degrees, ControlType.kPosition);
   }
@@ -127,6 +128,21 @@ public class wheelOfDeath extends SubsystemBase {
       return isAtSetpoint();
     });
   }
+  /*
+   * COMMANDS TO SET POSITIONS ( because we can't call commands that call for the same subsystem,
+   * but you can call two commands that are in the same subsystem)
+   */
+
+   public Command setPostition(pivotPosition pos){
+    return runOnce(() -> {
+      setPivotPosition(pos);
+    });
+   }
+   public Command stopMotors(){
+    return runOnce(()-> {
+      stop();
+    });
+   }
 
   @Override
   public void periodic() {

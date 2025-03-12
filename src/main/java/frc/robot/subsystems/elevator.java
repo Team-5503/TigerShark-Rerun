@@ -112,7 +112,7 @@ public class elevator extends SubsystemBase {
   //   closedLoopControllerEleL1.setReference(currentTargetPosition.l1rotations, ControlType.kPosition);
   // }
 
-  public void setPosition(elevatorPosition position){
+  public void setElevatorPosition(elevatorPosition position){
     currentTargetPosition = position;
     closedLoopControllerEleL1.setReference(position.l1rotations, ControlType.kPosition);
     closedLoopControllerEleL2.setReference(position.l2rotations, ControlType.kPosition);
@@ -167,6 +167,21 @@ public class elevator extends SubsystemBase {
       return isAtSetpointL1() && isAtSetpointL2();
     });
   }
+  /*
+   * COMMANDS TO SET POSITIONS ( because we can't call commands that call for the same subsystem,
+   * but you can call two commands that are in the same subsystem)
+   */
+
+   public Command setPostition(elevatorPosition pos){
+    return runOnce(() -> {
+      setElevatorPosition(pos);
+    });
+   }
+   public Command stopMotors(){
+    return runOnce(()-> {
+      stop();
+    });
+   }
 
   @Override
   public void periodic() {

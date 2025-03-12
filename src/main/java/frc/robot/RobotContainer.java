@@ -27,6 +27,12 @@ import frc.robot.commands.wheelOfDeath.*;
 import frc.robot.commands.legoHand.coral.*;
 //import frc.robot.commands.legoHand.algae.*;
 
+import frc.robot.subsystems.climber.climbPosition;
+import frc.robot.subsystems.elevator.elevatorPosition;
+import frc.robot.subsystems.coral.coralSpeed;
+import frc.robot.subsystems.wheelOfDeath.pivotPosition;
+
+
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
@@ -59,6 +65,10 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
 
         climb.setDefaultCommand(new RunCommand(() -> {climb.setStow();}, climb));
+        pivot.setDefaultCommand(pivot.setPostition(pivotPosition.STOW));
+        elevator.setDefaultCommand(elevator.setPostition(elevatorPosition.STOW));
+        
+
 
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
@@ -98,7 +108,9 @@ public class RobotContainer {
             .andThen(new coralStop(coral))
         );
         final Trigger cOuttake = operator.rightTrigger(.5);
-        cOuttake.whileTrue(new coralOuttake(coral)).onFalse(
+        cOuttake.whileTrue(
+            new coralOuttake(coral))
+            .onFalse(
             coral.waitUntilHasNoCoral()
             .andThen(new coralStop(coral))
         );
@@ -106,43 +118,43 @@ public class RobotContainer {
         // position triggers
         final Trigger cLayerOne = operator.a();
         cLayerOne.onTrue(
-            new pivotSafe(pivot)
+            pivot.setPostition(pivotPosition.SAFE)
             .andThen(pivot.waitUntilAtSetpoint())
-            .andThen(new eleL1(elevator))
-            .alongWith(new pivotL1(pivot))
+            .andThen(elevator.setPostition(elevatorPosition.L_ONE))
+            .alongWith(pivot.setPostition(pivotPosition.L_ONE))
         );
         final Trigger cLayerTwo = operator.x();
         cLayerTwo.onTrue(
-            new pivotSafe(pivot)
+            pivot.setPostition(pivotPosition.SAFE)
             .andThen(pivot.waitUntilAtSetpoint())
-            .andThen(new eleL2(elevator))
-            .alongWith(new pivotL2(pivot))
+            .andThen(elevator.setPostition(elevatorPosition.L_TWO))
+            .alongWith(pivot.setPostition(pivotPosition.L_TWO))
         );
         final Trigger cLayerThree = operator.b();
         cLayerThree.onTrue(
-            new pivotSafe(pivot)
+            pivot.setPostition(pivotPosition.SAFE)
             .andThen(pivot.waitUntilAtSetpoint())
-            .andThen(new eleL3(elevator))
-            .alongWith(new pivotL3(pivot))
+            .andThen(elevator.setPostition(elevatorPosition.L_THREE))
+            .alongWith(pivot.setPostition(pivotPosition.L_THREE))
         );
         final Trigger cLayerFour = operator.y();
         cLayerFour.onTrue(
-            new pivotSafe(pivot)
+            pivot.setPostition(pivotPosition.SAFE)
             .andThen(pivot.waitUntilAtSetpoint())
-            .andThen(new eleL4(elevator))
-            .alongWith(new pivotL4(pivot))
+            .andThen(elevator.setPostition(elevatorPosition.L_FOUR))
+            .alongWith(pivot.setPostition(pivotPosition.L_FOUR))
         );
         final Trigger cBay = operator.rightBumper();
         cBay.onTrue(
-            new pivotSafe(pivot)
+            pivot.setPostition(pivotPosition.SAFE)
             .andThen(pivot.waitUntilAtSetpoint())
-            .andThen(new eleBay(elevator))
-            .alongWith(new pivotBay(pivot))
+            .andThen(elevator.setPostition(elevatorPosition.C_BAY))
+            .alongWith(pivot.setPostition(pivotPosition.C_BAY))
         );
         final Trigger superStructureStop = operator.start();
         superStructureStop.onTrue(
-            new eleStop(elevator)
-            .alongWith(new pivotStop(pivot))
+            pivot.stopMotors()
+            .alongWith(elevator.stopMotors())
         );
 
         drivetrain.registerTelemetry(logger::telemeterize);

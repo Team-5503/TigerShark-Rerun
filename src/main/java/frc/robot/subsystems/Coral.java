@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.Constants.CoralConstants;
+import frc.robot.subsystems.elevator.elevatorPosition;
 
 /*
  * INITIALIZATION
@@ -163,6 +164,22 @@ public class coral extends SubsystemBase {
       return !hasCoral();
     });
   }
+  /*
+   * COMMANDS TO SET POSITIONS ( because we can't call commands that call for the same subsystem,
+   * but you can call two commands that are in the same subsystem)
+   */
+
+   public Command setPostition(coralSpeed pos){
+    return runOnce(() -> {
+      setSpeed(pos);
+    });
+   }
+   public Command stopMotors(){
+    return runOnce(()-> {
+      stop();
+    });
+   }
+
 
   @Override
   public void periodic() {
