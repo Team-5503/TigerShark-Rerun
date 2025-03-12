@@ -22,8 +22,6 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.*;
 
 import frc.robot.commands.climb.*;
-import frc.robot.commands.elevator.*;
-import frc.robot.commands.wheelOfDeath.*;
 import frc.robot.commands.legoHand.coral.*;
 //import frc.robot.commands.legoHand.algae.*;
 
@@ -67,7 +65,7 @@ public class RobotContainer {
         climb.setDefaultCommand(new RunCommand(() -> {climb.setStow();}, climb));
         pivot.setDefaultCommand(pivot.setPostition(pivotPosition.STOW));
         elevator.setDefaultCommand(elevator.setPostition(elevatorPosition.STOW));
-        
+
 
 
         drivetrain.setDefaultCommand(
