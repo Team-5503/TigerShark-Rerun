@@ -188,21 +188,22 @@ public class elevator extends SubsystemBase {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("L1 Position", getPositionL1());
     SmartDashboard.putNumber("L2 Position", getPositionL2());
-    SmartDashboard.putNumber("Target L1 Position", currentTargetPosition.getRotationsL1());
-    SmartDashboard.putNumber("Target L2 Position", currentTargetPosition.getRotationsL2());
-    SmartDashboard.putBoolean("L1 at Setpoint", isAtSetpointL1());
-    SmartDashboard.putBoolean("L2 at Setpoint", isAtSetpointL2());
+    //SmartDashboard.putNumber("Target L1 Position", currentTargetPosition.getRotationsL1());
+    //SmartDashboard.putNumber("Target L2 Position", currentTargetPosition.getRotationsL2());
+    //SmartDashboard.putBoolean("L1 at Setpoint", isAtSetpointL1());
+    //SmartDashboard.putBoolean("L2 at Setpoint", isAtSetpointL2());
     SmartDashboard.putBoolean("elevator at Setpoint", (isAtSetpointL1() && isAtSetpointL2()));
   }
 
   public enum elevatorPosition {
     // ENUMS FOR POSITIONS 
-    STOW(0,0),
-    L_ONE(0,0),
-    L_TWO(0,0),
-    L_THREE(0,0),
-    L_FOUR(0,0),
-    C_BAY(0,0);
+    STOW(0,5.5),
+    L_ONE(.023,6.78),
+    L_TWO(.047,-3.19),
+    L_THREE(12.09,7.66),
+    L_FOUR(35.75,17.9),
+    C_BAY(5.23,11.5),
+    SAFE(0, 8.7);
 
     private double l1rotations, l2rotations;
     /**Constrcutor for rotations for climbPositions (Enum for climb poses)

@@ -131,12 +131,15 @@ public class coral extends SubsystemBase {
     return (getSpeedError() < CoralConstants.kTolerance);
   }
 
-  private LaserCan.Measurement getMeasurement() {
-    return coralDetect.getMeasurement();
+  private int getMeasurement() {
+    if (coralDetect.getMeasurement() != null){
+    return coralDetect.getMeasurement().distance_mm;
+    }
+    return 0;
   }
 
   private boolean hasCoral(){
-    return (getMeasurement().distance_mm < CoralConstants.kTolerance);
+    return (getMeasurement() < CoralConstants.kTolerance);
   }
 
   /*
@@ -184,16 +187,17 @@ public class coral extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Coral intake voltage", getSpeed());
-    SmartDashboard.putNumber("Target intake voltage", currentTargetSpeed.getSpeed());
-    SmartDashboard.putBoolean("Coral Intake at target voltage", isAtSpeed());
+    //SmartDashboard.putNumber("Coral intake voltage", getSpeed());
+    //SmartDashboard.putNumber("Target intake voltage", currentTargetSpeed.getSpeed());
+    //SmartDashboard.putBoolean("Coral Intake at target voltage", isAtSpeed());
+    SmartDashboard.putBoolean("Intake has Coral", hasCoral());
   }
 
   public enum coralSpeed {
     // ENUMS FOR VOLTAGES 
     INTAKE(.15),
     STOP(0),
-    OUTTAKE(.6);
+    OUTTAKE(.7);
 
     private double speed;
     /**Constrcutor for speed for coralSpeeds (Enum for voltage)

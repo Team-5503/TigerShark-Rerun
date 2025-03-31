@@ -61,18 +61,19 @@ public class wheelOfDeath extends SubsystemBase {
       .idleMode(PivotConstants.kIdleMode); 
     pivotConfig.closedLoop
       .feedbackSensor(PivotConstants.kSensor) 
-      .pidf(PivotConstants.kP, PivotConstants.kI, PivotConstants.kD, PivotConstants.kFf) 
+      .positionWrappingEnabled(true)
+      .positionWrappingInputRange(-180, 180)
+      .pidf(PivotConstants.kP, PivotConstants.kI, PivotConstants.kD, PivotConstants.kFf)
       .outputRange(PivotConstants.kMinOutputLimit,PivotConstants.kMaxOutputLimit);
     pivotConfig.softLimit
       .forwardSoftLimitEnabled(false)
-      .forwardSoftLimit(PivotConstants.kForwardSoftLimit) 
-      .reverseSoftLimitEnabled(false)
-      .reverseSoftLimit(PivotConstants.kReverseSoftLimit);
+      //.forwardSoftLimit(PivotConstants.kForwardSoftLimit) 
+      .reverseSoftLimitEnabled(false);
+      //.reverseSoftLimit(PivotConstants.kReverseSoftLimit);
     pivotConfig.encoder
       .positionConversionFactor(PivotConstants.kPositionCoversionFactor);
     pivotConfig.absoluteEncoder
     .positionConversionFactor(PivotConstants.kPositionCoversionFactor)
-    .zeroOffset(PivotConstants.kOffset)
     .zeroCentered(true)
     .inverted(PivotConstants.kAbsoluteEncoderInverted);
 
@@ -148,19 +149,19 @@ public class wheelOfDeath extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putNumber("Pivot Position", getPosition());
-    SmartDashboard.putNumber("Target Pivot Position", currentTargetPosition.getDegrees());
+    //SmartDashboard.putNumber("Target Pivot Position", currentTargetPosition.getDegrees());
     SmartDashboard.putBoolean("Pivot at Setpoint", isAtSetpoint());
   }
 
   public enum pivotPosition {
     // ENUMS FOR POSITIONS 
     STOW(0),
-    L_ONE(56.25),
-    L_TWO(0),
-    L_THREE(0),
-    L_FOUR(0),
-    C_BAY(0),
-    SAFE(180);
+    L_ONE(29),
+    L_TWO(-138),
+    L_THREE(-138),
+    L_FOUR(-137),
+    C_BAY(-56),
+    SAFE(0);
 
     private double degrees;
     /**Constrcutor for degrees for pivotPositions (Enum for pivot poses)
